@@ -8,18 +8,10 @@ const DEFAULT_PRODUCTS = [
 ];
 
 function loadProducts() {
-    const stored = localStorage.getItem('royal_products');
-    if (stored) {
-        products = JSON.parse(stored);
-    } else {
-        products = [...DEFAULT_PRODUCTS];
-        saveProducts();
-    }
-    renderProducts();
+    loadProductsFromGitHub();
 }
-
 function saveProducts() {
-    localStorage.setItem('royal_products', JSON.stringify(products));
+    saveProductsToGitHub();
 }
 
 function renderProducts() {
