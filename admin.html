@@ -209,7 +209,11 @@
     </div>
 </div>
 
-<script>
+<script>    // ===== إعدادات GitHub =====
+    const REPO_OWNER = "اسم المستخدم بتاعك";
+    const REPO_NAME = "اسم المستودع";
+    const GITHUB_TOKEN = "github_pat_11A..." // ضعي الـ token بتاعك هنا
+
     const STORAGE_PWD_KEY = 'admin_password';
     function initAdminPassword() {
         if (!localStorage.getItem(STORAGE_PWD_KEY)) localStorage.setItem(STORAGE_PWD_KEY, 'admin123');
@@ -220,55 +224,52 @@
         return false;
     }
 
-    const lockScreen = document.getElementById('lockScreen');
-    const adminContent = document.getElementById('adminContent');
-    const passwordInput = document.getElementById('passwordInput');
-    const unlockBtn = document.getElementById('unlockBtn');
-    const lockError = document.getElementById('lockError');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    function showLockScreen() { lockScreen.style.display = 'flex'; adminContent.style.display = 'none'; if(passwordInput) passwordInput.value = ''; lockError.innerText = ''; }
-    function hideLockScreen() { lockScreen.style.display = 'none'; adminContent.style.display = 'block'; }
-    function attemptUnlock() {
-        if (checkPassword(passwordInput.value)) { sessionStorage.setItem('admin_logged_in', 'true'); hideLockScreen(); }
-        else lockError.innerText = '❌ كلمة المرور غير صحيحة';
-    }
-    function logout() { sessionStorage.removeItem('admin_logged_in'); showLockScreen(); }
-    function checkSession() {
-        initAdminPassword();
-        if (sessionStorage.getItem('admin_logged_in') === 'true') hideLockScreen();
-        else showLockScreen();
-    }
-
-    function setupChangePassword() {
-        const newPwdInput = document.getElementById('newPassword');
-        const changeBtn = document.getElementById('changePasswordBtn');
-        const msgDiv = document.getElementById('pwdMessage');
-        changeBtn.addEventListener('click', () => {
-            const newPwd = newPwdInput.value.trim();
-            if (newPwd.length < 4) { msgDiv.innerText = '❌ 4 أحرف على الأقل'; msgDiv.style.color = '#ff5555'; return; }
-            if (saveNewPassword(newPwd)) { msgDiv.innerText = '✅ تم التغيير'; msgDiv.style.color = '#2ecc71'; newPwdInput.value = ''; }
-            else msgDiv.innerText = '❌ حدث خطأ';
-            setTimeout(() => msgDiv.innerText = '', 3000);
-        });
-    }
-
+    // ===== قراءة المنتجات من GitHub =====
     let products = [];
-    function loadProducts() {
-        const stored = localStorage.getItem('royal_products');
-        if (stored) products = JSON.parse(stored);
-        else {
-            products = [
-                { id: 101, name: "1", image: "1.jpeg", description: "" },
-                { id: 102, name: "2", image: "2.jpeg", description: "" },
-                { id: 103, name: "3", image: "3.jpeg", description: "" },
-                
-            ];
-            saveProducts();
+    async function loadProducts() {
+        const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/products.json`;
+        try {
+            const response = await fetch(url, { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            const content = atob(data.content);
+            const jsonData = JSON.parse(content);
+            products = jsonData.products || [];
+            renderAdminList();
+        } catch (error) {
+            console.error("خطأ في تحميل المنتجات:", error);
+            products = [];
+            renderAdminList();
         }
-        renderAdminList();
     }
-    function saveProducts() { localStorage.setItem('royal_products', JSON.stringify(products)); }
+
+    // ===== حفظ المنتجات إلى GitHub =====
+    async function saveProducts() {
+        const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/products.json`;
+        try {
+            const getResponse = await fetch(url, { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } });
+            const fileData = await getResponse.json();
+            const sha = fileData.sha;
+            const newContent = { products: products };
+            const encodedContent = btoa(JSON.stringify(newContent, null, 2));
+            const updateResponse = await fetch(url, {
+                method: "PUT",
+                headers: {
+                    Authorization: `Bearer ${GITHUB_TOKEN}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ message: "تحديث المنتجات", content: encodedContent, sha: sha })
+            });
+            if (updateResponse.ok) {
+                Swal.fire({ icon: 'success', title: 'تم الحفظ', text: 'تم حفظ المنتجات في الخادم المركزي بنجاح!' });
+            } else {
+                throw new Error(`HTTP ${updateResponse.status}`);
+            }
+        } catch (error) {
+            console.error("خطأ في الحفظ:", error);
+            Swal.fire({ icon: 'error', title: 'خطأ', text: 'حدث خطأ أثناء الحفظ، حاول مرة أخرى.' });
+        }
+    }
 
     function renderAdminList() {
         const container = document.getElementById('adminProductsList');
@@ -314,13 +315,13 @@
         const idField = document.getElementById('editId');
         let image = currentImageBase64;
         const description = document.getElementById('productDescription').value.trim();
-        if (!image && !idField.value) { alert('يرجى اختيار صورة'); return; }
+        if (!image && !idField.value) { Swal.fire('تنبيه', 'يرجى اختيار صورة للمنتج', 'warning'); return; }
         if (idField.value) {
             const idx = products.findIndex(p => p.id == idField.value);
             if (idx !== -1) {
                 products[idx].image = image || products[idx].image;
                 products[idx].description = description || products[idx].description;
-                saveProducts();
+                await saveProducts();
                 renderAdminList();
                 resetForm();
             }
@@ -329,7 +330,7 @@
             const newId = Date.now();
             const defaultName = `منتج فاخر ${newId.toString().slice(-4)}`;
             products.push({ id: newId, name: defaultName, image, description: description || "منتج فاخر بجودة عالية." });
-            saveProducts();
+            await saveProducts();
             renderAdminList();
             resetForm();
         }
@@ -347,10 +348,11 @@
         }
     }
 
-    function deleteProduct(id) {
-        if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+    async function deleteProduct(id) {
+        const result = await Swal.fire({ title: 'تأكيد الحذف', text: 'هل أنت متأكد من حذف هذا المنتج؟', icon: 'warning', showCancelButton: true, confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء' });
+        if (result.isConfirmed) {
             products = products.filter(p => p.id !== id);
-            saveProducts();
+            await saveProducts();
             renderAdminList();
             resetForm();
         }
@@ -367,6 +369,7 @@
         document.getElementById('productDescription').value = '';
     }
 
+    // ===== إدارة اللوجو (يظل كما هو) =====
     function loadLogoPreview() {
         const logoData = localStorage.getItem('royal_logo');
         const container = document.getElementById('currentLogoContainer');
@@ -380,11 +383,44 @@
             document.getElementById('logoPreview').innerHTML = `<img src="${base64}" style="max-width:150px;">`;
             document.getElementById('saveLogoBtn').onclick = () => {
                 localStorage.setItem('royal_logo', base64);
-                alert('تم حفظ اللوجو');
+                Swal.fire('تم الحفظ', 'تم حفظ شعار الموقع', 'success');
                 loadLogoPreview();
             };
         }
     });
+
+    // ===== قفل الشاشة وإدارة الجلسة (يظل كما هو) =====
+    const lockScreen = document.getElementById('lockScreen');
+    const adminContent = document.getElementById('adminContent');
+    const passwordInput = document.getElementById('passwordInput');
+    const unlockBtn = document.getElementById('unlockBtn');
+    const lockError = document.getElementById('lockError');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    function showLockScreen() { lockScreen.style.display = 'flex'; adminContent.style.display = 'none'; if(passwordInput) passwordInput.value = ''; lockError.innerText = ''; }
+    function hideLockScreen() { lockScreen.style.display = 'none'; adminContent.style.display = 'block'; }
+    function attemptUnlock() {
+        if (checkPassword(passwordInput.value)) { sessionStorage.setItem('admin_logged_in', 'true'); hideLockScreen(); }
+        else lockError.innerText = '❌ كلمة المرور غير صحيحة';
+    }
+    function logout() { sessionStorage.removeItem('admin_logged_in'); showLockScreen(); }
+    function checkSession() {
+        initAdminPassword();
+        if (sessionStorage.getItem('admin_logged_in') === 'true') hideLockScreen();
+        else showLockScreen();
+    }
+    function setupChangePassword() {
+        const newPwdInput = document.getElementById('newPassword');
+        const changeBtn = document.getElementById('changePasswordBtn');
+        const msgDiv = document.getElementById('pwdMessage');
+        changeBtn.addEventListener('click', () => {
+            const newPwd = newPwdInput.value.trim();
+            if (newPwd.length < 4) { msgDiv.innerText = '❌ 4 أحرف على الأقل'; msgDiv.style.color = '#ff5555'; return; }
+            if (saveNewPassword(newPwd)) { msgDiv.innerText = '✅ تم التغيير'; msgDiv.style.color = '#2ecc71'; newPwdInput.value = ''; }
+            else msgDiv.innerText = '❌ حدث خطأ';
+            setTimeout(() => msgDiv.innerText = '', 3000);
+        });
+    }
 
     function initAdminTheme() {
         const saved = localStorage.getItem('theme');
@@ -414,60 +450,7 @@
         passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptUnlock(); });
         if (logoutBtn) logoutBtn.addEventListener('click', logout);
         setupChangePassword();
-        
     });
-    // ثوابت
-const REPO_OWNER = "اسم المستخدم الخاص بك على GitHub";
-const REPO_NAME = "اسم المستودع";
-const FILE_PATH = "products.json";
-const GITHUB_TOKEN = "github_pat_xxxx..."; // ضعي الرمز هنا (احذفيه قبل رفع الملف!)
-
-// قراءة المنتجات من GitHub
-async function loadProductsFromGitHub() {
-    const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
-    const response = await fetch(url, {
-        headers: { Authorization: `Bearer ${GITHUB_TOKEN}` }
-    });
-    const data = await response.json();
-    const content = atob(data.content); // فك تشفير base64
-    const jsonData = JSON.parse(content);
-    products = jsonData.products || [];
-    renderAdminList();
-}
-
-// حفظ المنتجات إلى GitHub
-async function saveProductsToGitHub() {
-    const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
-    // أولاً: الحصول على SHA الحالي للملف (لازمة للتحديث)
-    const getResponse = await fetch(url, {
-        headers: { Authorization: `Bearer ${GITHUB_TOKEN}` }
-    });
-    const fileData = await getResponse.json();
-    const sha = fileData.sha;
-
-    // تحضير المحتوى الجديد
-    const newContent = { products: products };
-    const encodedContent = btoa(JSON.stringify(newContent, null, 2));
-
-    // إرسال التحديث
-    const updateResponse = await fetch(url, {
-        method: "PUT",
-        headers: {
-            Authorization: `Bearer ${GITHUB_TOKEN}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            message: "تحديث المنتجات",
-            content: encodedContent,
-            sha: sha
-        })
-    });
-    if (updateResponse.ok) {
-        alert("تم حفظ المنتجات بنجاح!");
-    } else {
-        alert("حدث خطأ أثناء الحفظ");
-    }
-}
 </script>
 </body>
 </html>
