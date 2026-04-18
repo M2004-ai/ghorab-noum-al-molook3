@@ -413,7 +413,60 @@
         passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptUnlock(); });
         if (logoutBtn) logoutBtn.addEventListener('click', logout);
         setupChangePassword();
+        
     });
+    // ثوابت
+const REPO_OWNER = "اسم المستخدم الخاص بك على GitHub";
+const REPO_NAME = "اسم المستودع";
+const FILE_PATH = "products.json";
+const GITHUB_TOKEN = "github_pat_xxxx..."; // ضعي الرمز هنا (احذفيه قبل رفع الملف!)
+
+// قراءة المنتجات من GitHub
+async function loadProductsFromGitHub() {
+    const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+    const response = await fetch(url, {
+        headers: { Authorization: `Bearer ${GITHUB_TOKEN}` }
+    });
+    const data = await response.json();
+    const content = atob(data.content); // فك تشفير base64
+    const jsonData = JSON.parse(content);
+    products = jsonData.products || [];
+    renderAdminList();
+}
+
+// حفظ المنتجات إلى GitHub
+async function saveProductsToGitHub() {
+    const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+    // أولاً: الحصول على SHA الحالي للملف (لازمة للتحديث)
+    const getResponse = await fetch(url, {
+        headers: { Authorization: `Bearer ${GITHUB_TOKEN}` }
+    });
+    const fileData = await getResponse.json();
+    const sha = fileData.sha;
+
+    // تحضير المحتوى الجديد
+    const newContent = { products: products };
+    const encodedContent = btoa(JSON.stringify(newContent, null, 2));
+
+    // إرسال التحديث
+    const updateResponse = await fetch(url, {
+        method: "PUT",
+        headers: {
+            Authorization: `Bearer ${GITHUB_TOKEN}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message: "تحديث المنتجات",
+            content: encodedContent,
+            sha: sha
+        })
+    });
+    if (updateResponse.ok) {
+        alert("تم حفظ المنتجات بنجاح!");
+    } else {
+        alert("حدث خطأ أثناء الحفظ");
+    }
+}
 </script>
 </body>
 </html>
