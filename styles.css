@@ -1,0 +1,495 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg-primary: #fef9f0;
+    --bg-secondary: #fff8ed;
+    --card-bg: rgba(255, 250, 240, 0.75);
+    --text-primary: #2c2a28;
+    --text-secondary: #5a5548;
+    --accent-gold: #d4af37;
+    --accent-gold-light: #e8c547;
+    --accent-gold-dark: #b8902e;
+    --border-light: rgba(212, 175, 55, 0.3);
+    --shadow-sm: 0 10px 30px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 25px 50px rgba(212, 175, 55, 0.15);
+    --glow-gold: 0 0 20px rgba(212, 175, 55, 0.4);
+    --header-bg: rgba(255, 248, 237, 0.85);
+    --footer-bg: #f5efe6;
+    --hero-gradient: linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(212,175,55,0.1) 100%);
+}
+
+[data-theme="dark"] {
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #121212;
+    --card-bg: rgba(25, 25, 30, 0.8);
+    --text-primary: #f0f0f0;
+    --text-secondary: #b0b0b0;
+    --accent-gold: #e6b422;
+    --accent-gold-light: #f5c542;
+    --accent-gold-dark: #c49a1a;
+    --border-light: rgba(230, 180, 34, 0.4);
+    --shadow-sm: 0 10px 30px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 25px 50px rgba(230, 180, 34, 0.2);
+    --glow-gold: 0 0 25px rgba(230, 180, 34, 0.6);
+    --header-bg: rgba(10, 10, 10, 0.9);
+    --footer-bg: #0f0f0f;
+    --hero-gradient: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, rgba(230,180,34,0.15) 100%);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Cormorant Garamond', serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    transition: background 0.3s ease, color 0.2s ease;
+}
+
+.container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 25px;
+}
+
+/* تنسيق عام */
+h1, h2, h3, .hero-title, .section-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* البانر العلوي */
+.top-banner {
+    background: var(--accent-gold);
+    text-align: center;
+    padding: 12px;
+    font-weight: 600;
+}
+.top-banner a {
+    color: #1a1a1a;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.top-banner i {
+    font-size: 1.3rem;
+}
+
+/* الهيدر */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--header-bg);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid var(--border-light);
+    padding: 15px 0;
+}
+.header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.logo-img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+    border-radius: 12px;
+}
+.crown-icon {
+    font-size: 32px;
+    filter: drop-shadow(0 0 8px var(--accent-gold));
+    animation: gentleFloat 3s infinite;
+}
+@keyframes gentleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+.logo h1 {
+    font-size: 26px;
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 600;
+    transition: 0.3s;
+}
+.nav-links a:hover, .nav-links a.active {
+    color: var(--accent-gold);
+    text-shadow: 0 0 6px var(--accent-gold);
+}
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--accent-gold);
+    border-radius: 40px;
+    padding: 8px 18px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--accent-gold);
+    transition: 0.3s;
+}
+.theme-toggle:hover {
+    background: var(--accent-gold);
+    color: #1a1a1a;
+}
+.admin-link {
+    background: linear-gradient(135deg, var(--accent-gold-dark), var(--accent-gold));
+    padding: 6px 18px;
+    border-radius: 40px;
+    color: #1a1a1a !important;
+    font-weight: bold;
+}
+
+/* هيرو */
+.hero {
+    position: relative;
+    min-height: 85vh;
+    background: url('33.png') center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--hero-gradient);
+}
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    padding: 20px;
+}
+.hero-title {
+    font-size: 4rem;
+    font-weight: 900;
+    color: white;
+    text-shadow: 0 5px 20px rgba(0,0,0,0.4);
+}
+.hero-title span {
+    background: linear-gradient(135deg, #e6b422, #f5d76e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: #f5efe6;
+    margin: 20px 0 30px;
+}
+.btn-gold {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+    padding: 14px 38px;
+    border-radius: 50px;
+    color: #1a1a1a;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.3s;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+.btn-gold:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(212,175,55,0.5);
+}
+.fade-up {
+    animation: fadeUp 0.8s ease forwards;
+    opacity: 0;
+}
+.delay-1 { animation-delay: 0.2s; }
+.delay-2 { animation-delay: 0.4s; }
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* المنتجات */
+.products-section {
+    padding: 80px 0;
+}
+.section-title {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 60px;
+    position: relative;
+    width: 100%;
+}
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+}
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 40px;
+}
+.product-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border-radius: 28px;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+    transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+}
+.product-card:hover {
+    transform: translateY(-12px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-gold);
+}
+.product-img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: linear-gradient(145deg, #faf5e8, #f0ebdf);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+.product-img img {
+    max-width: 90%;
+    max-height: 90%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.5s ease;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.1));
+}
+.product-card:hover .product-img img {
+    transform: scale(1.02);
+}
+.product-info {
+    padding: 20px;
+    text-align: center;
+}
+.product-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.btn-wa-order {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #25d366, #20ba5a);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+.btn-wa-order:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px rgba(37,211,102,0.4);
+}
+.btn-details {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(212, 175, 55, 0.15);
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
+    padding: 12px 20px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+.btn-details:hover {
+    background: var(--accent-gold);
+    color: #1a1a1a;
+    transform: translateY(-2px);
+}
+
+/* فوتر */
+.footer {
+    background: var(--footer-bg);
+    padding: 60px 0 30px;
+    margin-top: 50px;
+    border-top: 2px solid var(--accent-gold);
+}
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+.footer-col h3 {
+    font-size: 1.5rem;
+    margin-bottom: 18px;
+    color: var(--accent-gold);
+}
+.footer-col p, .footer-col a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    display: block;
+    margin: 10px 0;
+    transition: 0.3s;
+}
+.footer-col a:hover {
+    color: var(--accent-gold);
+    padding-right: 5px;
+}
+.social-icons {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+.social-icons a {
+    width: 42px;
+    height: 42px;
+    background: rgba(212,175,55,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+.footer-wa i {
+    margin-left: 8px;
+}
+.footer-bottom {
+    text-align: center;
+    padding-top: 30px;
+    border-top: 1px solid var(--border-light);
+    margin-top: 30px;
+}
+
+/* زر واتساب عائم */
+.whatsapp-float {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #25d366;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 8px 25px rgba(37,211,102,0.4);
+    transition: 0.3s;
+    z-index: 99;
+}
+.whatsapp-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 30px rgba(37,211,102,0.6);
+}
+
+/* استجابة */
+@media (max-width: 992px) {
+    .hero-title { font-size: 3rem; }
+    .section-title { font-size: 2.5rem; }
+}
+@media (max-width: 768px) {
+    .header .container { flex-direction: column; gap: 12px; }
+    .hero-title { font-size: 2rem; }
+    .hero-subtitle { font-size: 1rem; }
+    .products-grid { gap: 25px; }
+    .product-img { aspect-ratio: 3 / 4; }
+    .footer-content { flex-direction: column; text-align: center; }
+    .social-icons { justify-content: center; }
+    .whatsapp-float { width: 55px; height: 55px; font-size: 1.8rem; bottom: 20px; right: 20px; }
+}
+@media (max-width: 480px) {
+    .container { padding: 0 15px; }
+    .btn-wa-order, .btn-details { padding: 8px 15px; font-size: 0.85rem; }
+}
+
+/* ===== MODAL (نافذة منبثقة) ===== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+}
+.modal-content {
+    background: var(--card-bg);
+    backdrop-filter: blur(15px);
+    border-radius: 32px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    border: 1px solid var(--accent-gold);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    position: relative;
+    animation: modalFadeIn 0.3s ease;
+}
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+.close-modal {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: 0.3s;
+}
+.close-modal:hover {
+    color: var(--accent-gold);
+}
+#modalProductName {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: var(--accent-gold);
+}
+#modalProductDescription {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+}

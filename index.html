@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>غرف نوم الملوك | أثاث فاخر</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="top-banner">
+    <a href="https://wa.me/966593394099" target="_blank">
+        <i class="fab fa-whatsapp"></i> تواصل معنا عبر واتساب للاستفسار والطلب
+    </a>
+</div>
+
+<header class="header glass-header">
+    <div class="container">
+        <div class="logo">
+            <img id="siteLogo" class="logo-img" src="" alt="شعار غرف نوم الملوك" style="display: none;">
+            <span class="crown-icon">👑</span>
+            <h1>غرف نوم الملوك</h1>
+        </div>
+        <nav class="nav-links">
+            <a href="index.html" class="active">الرئيسية</a>
+            <button id="themeToggle" class="theme-toggle" aria-label="تبديل الوضع"><i class="fas fa-moon"></i></button>
+            <a href="admin.html" class="admin-link"><i class="fas fa-crown"></i> لوحة التحكم</a>
+        </nav>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h2 class="hero-title fade-up">غرف نوم <span>ملوكية</span></h2>
+        <p class="hero-subtitle fade-up delay-1">أثاث فاخر بتصاميم عصرية وخامات استثنائية</p>
+        <a href="#products" class="btn-gold fade-up delay-2">اكتشف المجموعة</a>
+    </div>
+</section>
+
+<section id="products" class="products-section">
+    <div class="container">
+        <h2 class="section-title">تشكيلتنا الملكية</h2>
+        <div class="products-grid" id="productsGrid"></div>
+    </div>
+</section>
+
+<!-- نافذة منبثقة (Modal) لعرض التفاصيل -->
+<div id="productModal" class="modal">
+    <div class="modal-content glass-modal">
+        <span class="close-modal">&times;</span>
+        <h3 id="modalProductName"></h3>
+        <p id="modalProductDescription"></p>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h3>غرف نوم الملوك</h3>
+                <p>أثاث فاخر يليق بملوك العصر الحديث.</p>
+            </div>
+            <div class="footer-col">
+                <h3>تواصل معنا</h3>
+                <a href="https://wa.me/966567004349?text=مرحباً%2C%20أريد%20الاستفسار" target="_blank" class="footer-wa">
+                    <i class="fab fa-whatsapp"></i> واتساب: +966567004349
+                </a>
+            </div>
+            <div class="footer-col">
+                <h3>روابط</h3>
+                <a href="#">سياسة الخصوصية</a>
+                <a href="#">الشروط والأحكام</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 غرف نوم الملوك. جميع الحقوق محفوظة.</p>
+        </div>
+    </div>
+</footer>
+
+<a href="https://wa.me/966567004349?text=مرحباً%2C%20أريد%20طلب%20منتج" target="_blank" class="whatsapp-float" aria-label="واتساب">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم | غرف نوم الملوك</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-panel {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 30px;
+            border: 1px solid var(--border-light);
+        }
+        .admin-panel h2 {
+            color: var(--accent-gold);
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+        .btn-admin {
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            border: none;
+            padding: 12px 25px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .product-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+            padding: 12px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-light);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .product-list-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+        .product-info-admin {
+            flex: 1;
+            text-align: right;
+        }
+        .product-actions button {
+            background: rgba(212,175,55,0.2);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 30px;
+            margin: 0 4px;
+            cursor: pointer;
+        }
+        .image-preview {
+            max-width: 150px;
+            margin-top: 10px;
+            border-radius: 12px;
+        }
+        .logo-section {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .current-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .current-logo img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            background: white;
+            border-radius: 12px;
+            padding: 5px;
+        }
+        .lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .lock-card {
+            background: var(--card-bg);
+            border-radius: 32px;
+            padding: 40px;
+            text-align: center;
+            border: 1px solid var(--accent-gold);
+            box-shadow: var(--shadow-lg);
+            max-width: 400px;
+            width: 90%;
+        }
+        .lock-card input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 40px;
+        }
+        .error-msg { color: #ff5555; margin-top: 10px; }
+        .admin-content { display: none; }
+        .change-pwd-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-light); }
+        .inline-input { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    </style>
+</head>
+<body>
+
+<div id="lockScreen" class="lock-screen">
+    <div class="lock-card">
+        <i class="fas fa-crown" style="font-size: 48px; color: var(--accent-gold);"></i>
+        <h2>لوحة التحكم</h2>
+        <p>أدخل كلمة المرور للمتابعة</p>
+        <input type="password" id="passwordInput" placeholder="كلمة المرور">
+        <button id="unlockBtn" class="btn-admin">دخول</button>
+        <div id="lockError" class="error-msg"></div>
+    </div>
+</div>
+
+<div id="adminContent" class="admin-content">
+    <header class="header glass-header">
+        <div class="container">
+            <div class="logo">
+                <span class="crown-icon">👑</span>
+                <h1>غرف نوم الملوك</h1>
+            </div>
+            <nav class="nav-links">
+                <a href="index.html">الرئيسية</a>
+                <button id="themeToggleAdmin" class="theme-toggle"><i class="fas fa-moon"></i></button>
+                <button id="logoutBtn" class="admin-link" style="background:#c49a1a;">خروج</button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="admin-panel">
+            <div class="logo-section">
+                <h2><i class="fas fa-image"></i> شعار الموقع</h2>
+                <div class="form-group">
+                    <label>رفع صورة اللوجو (من جهازك)</label>
+                    <input type="file" id="logoUpload" accept="image/*">
+                    <div id="logoPreview"></div>
+                    <button id="saveLogoBtn" class="btn-admin">حفظ اللوجو</button>
+                </div>
+                <div class="current-logo" id="currentLogoContainer"></div>
+            </div>
+
+            <h2><i class="fas fa-plus-circle"></i> إدارة المنتجات</h2>
+            <form id="productForm">
+                <input type="hidden" id="editId" value="">
+                <div class="form-group">
+                    <label>صورة المنتج (رفع من جهازك)</label>
+                    <input type="file" id="productImageUpload" accept="image/*" required>
+                    <div id="imagePreview" class="image-preview"></div>
+                </div>
+                <div class="form-group">
+                    <label>وصف المنتج</label>
+                    <textarea id="productDescription" rows="4" placeholder="أدخل وصفاً تفصيلياً للمنتج..."></textarea>
+                </div>
+                <button type="submit" class="btn-admin" id="submitBtn">إضافة منتج</button>
+                <button type="button" class="btn-admin" id="cancelEdit" style="display:none;">إلغاء</button>
+            </form>
+
+            <h3 style="margin-top: 40px;">المنتجات الحالية</h3>
+            <div id="adminProductsList"></div>
+
+            <div class="change-pwd-section">
+                <h4><i class="fas fa-key"></i> تغيير كلمة المرور</h4>
+                <div class="inline-input">
+                    <input type="password" id="newPassword" placeholder="كلمة المرور الجديدة">
+                    <button id="changePasswordBtn" class="btn-admin">تغيير</button>
+                </div>
+                <div id="pwdMessage" style="margin-top: 8px; font-size: 13px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const STORAGE_PWD_KEY = 'admin_password';
+    function initAdminPassword() {
+        if (!localStorage.getItem(STORAGE_PWD_KEY)) localStorage.setItem(STORAGE_PWD_KEY, 'admin123');
+    }
+    function checkPassword(pwd) { return pwd === localStorage.getItem(STORAGE_PWD_KEY); }
+    function saveNewPassword(newPwd) {
+        if (newPwd && newPwd.trim().length >= 4) { localStorage.setItem(STORAGE_PWD_KEY, newPwd); return true; }
+        return false;
+    }
+
+    const lockScreen = document.getElementById('lockScreen');
+    const adminContent = document.getElementById('adminContent');
+    const passwordInput = document.getElementById('passwordInput');
+    const unlockBtn = document.getElementById('unlockBtn');
+    const lockError = document.getElementById('lockError');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    function showLockScreen() { lockScreen.style.display = 'flex'; adminContent.style.display = 'none'; if(passwordInput) passwordInput.value = ''; lockError.innerText = ''; }
+    function hideLockScreen() { lockScreen.style.display = 'none'; adminContent.style.display = 'block'; }
+    function attemptUnlock() {
+        if (checkPassword(passwordInput.value)) { sessionStorage.setItem('admin_logged_in', 'true'); hideLockScreen(); }
+        else lockError.innerText = '❌ كلمة المرور غير صحيحة';
+    }
+    function logout() { sessionStorage.removeItem('admin_logged_in'); showLockScreen(); }
+    function checkSession() {
+        initAdminPassword();
+        if (sessionStorage.getItem('admin_logged_in') === 'true') hideLockScreen();
+        else showLockScreen();
+    }
+
+    function setupChangePassword() {
+        const newPwdInput = document.getElementById('newPassword');
+        const changeBtn = document.getElementById('changePasswordBtn');
+        const msgDiv = document.getElementById('pwdMessage');
+        changeBtn.addEventListener('click', () => {
+            const newPwd = newPwdInput.value.trim();
+            if (newPwd.length < 4) { msgDiv.innerText = '❌ 4 أحرف على الأقل'; msgDiv.style.color = '#ff5555'; return; }
+            if (saveNewPassword(newPwd)) { msgDiv.innerText = '✅ تم التغيير'; msgDiv.style.color = '#2ecc71'; newPwdInput.value = ''; }
+            else msgDiv.innerText = '❌ حدث خطأ';
+            setTimeout(() => msgDiv.innerText = '', 3000);
+        });
+    }
+
+    let products = [];
+    function loadProducts() {
+        const stored = localStorage.getItem('royal_products');
+        if (stored) products = JSON.parse(stored);
+        else {
+            products = [
+                { id: 101, name: "1", image: "1.jpeg", description: "" },
+                { id: 102, name: "2", image: "2.jpeg", description: "" },
+                { id: 103, name: "3", image: "3.jpeg", description: "" },
+                
+            ];
+            saveProducts();
+        }
+        renderAdminList();
+    }
+    function saveProducts() { localStorage.setItem('royal_products', JSON.stringify(products)); }
+
+    function renderAdminList() {
+        const container = document.getElementById('adminProductsList');
+        if (!container) return;
+        if (products.length === 0) { container.innerHTML = '<p>لا توجد منتجات. أضف منتجاً جديداً.</p>'; return; }
+        container.innerHTML = products.map(p => `
+            <div class="product-list-item">
+                <img src="${p.image}" onerror="this.src='https://placehold.co/60x60/f5efe6/b8902e?text=img'">
+                <div class="product-info-admin">
+                    <strong>${p.name}</strong><br>
+                    <small>${p.description ? p.description.substring(0, 60) + (p.description.length > 60 ? '...' : '') : 'لا يوجد وصف'}</small>
+                </div>
+                <div class="product-actions">
+                    <button onclick="editProduct(${p.id})"><i class="fas fa-edit"></i> تعديل</button>
+                    <button onclick="deleteProduct(${p.id})"><i class="fas fa-trash-alt"></i> حذف</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+        });
+    }
+
+    let currentImageBase64 = "";
+    const uploadInput = document.getElementById('productImageUpload');
+    const previewDiv = document.getElementById('imagePreview');
+    uploadInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            currentImageBase64 = await fileToBase64(file);
+            previewDiv.innerHTML = `<img src="${currentImageBase64}" style="max-width:150px; border-radius:12px;">`;
+        } else { currentImageBase64 = ""; previewDiv.innerHTML = ''; }
+    });
+
+    async function addOrUpdateProduct(event) {
+        event.preventDefault();
+        const idField = document.getElementById('editId');
+        let image = currentImageBase64;
+        const description = document.getElementById('productDescription').value.trim();
+        if (!image && !idField.value) { alert('يرجى اختيار صورة'); return; }
+        if (idField.value) {
+            const idx = products.findIndex(p => p.id == idField.value);
+            if (idx !== -1) {
+                products[idx].image = image || products[idx].image;
+                products[idx].description = description || products[idx].description;
+                saveProducts();
+                renderAdminList();
+                resetForm();
+            }
+        } else {
+            if (!image) return;
+            const newId = Date.now();
+            const defaultName = `منتج فاخر ${newId.toString().slice(-4)}`;
+            products.push({ id: newId, name: defaultName, image, description: description || "منتج فاخر بجودة عالية." });
+            saveProducts();
+            renderAdminList();
+            resetForm();
+        }
+    }
+
+    function editProduct(id) {
+        const product = products.find(p => p.id === id);
+        if (product) {
+            document.getElementById('editId').value = product.id;
+            currentImageBase64 = "";
+            previewDiv.innerHTML = `<img src="${product.image}" style="max-width:150px; border-radius:12px;">`;
+            document.getElementById('productDescription').value = product.description || '';
+            document.getElementById('submitBtn').innerText = 'تحديث المنتج';
+            document.getElementById('cancelEdit').style.display = 'inline-block';
+        }
+    }
+
+    function deleteProduct(id) {
+        if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+            products = products.filter(p => p.id !== id);
+            saveProducts();
+            renderAdminList();
+            resetForm();
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('productForm').reset();
+        document.getElementById('editId').value = '';
+        document.getElementById('submitBtn').innerText = 'إضافة منتج';
+        document.getElementById('cancelEdit').style.display = 'none';
+        currentImageBase64 = "";
+        previewDiv.innerHTML = '';
+        uploadInput.value = '';
+        document.getElementById('productDescription').value = '';
+    }
+
+    function loadLogoPreview() {
+        const logoData = localStorage.getItem('royal_logo');
+        const container = document.getElementById('currentLogoContainer');
+        if (logoData) container.innerHTML = `<div class="current-logo"><img src="${logoData}"><span>اللوجو الحالي</span></div>`;
+        else container.innerHTML = '<p>لا يوجد لوجو محدد</p>';
+    }
+    document.getElementById('logoUpload').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const base64 = await fileToBase64(file);
+            document.getElementById('logoPreview').innerHTML = `<img src="${base64}" style="max-width:150px;">`;
+            document.getElementById('saveLogoBtn').onclick = () => {
+                localStorage.setItem('royal_logo', base64);
+                alert('تم حفظ اللوجو');
+                loadLogoPreview();
+            };
+        }
+    });
+
+    function initAdminTheme() {
+        const saved = localStorage.getItem('theme');
+        if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+        else document.documentElement.setAttribute('data-theme', 'light');
+        const btn = document.getElementById('themeToggleAdmin');
+        if (btn) {
+            btn.innerHTML = saved === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            btn.addEventListener('click', () => {
+                const cur = document.documentElement.getAttribute('data-theme');
+                const newTheme = cur === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                btn.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        checkSession();
+        initAdminTheme();
+        loadProducts();
+        loadLogoPreview();
+        document.getElementById('productForm').addEventListener('submit', addOrUpdateProduct);
+        document.getElementById('cancelEdit').addEventListener('click', resetForm);
+        unlockBtn.addEventListener('click', attemptUnlock);
+        passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptUnlock(); });
+        if (logoutBtn) logoutBtn.addEventListener('click', logout);
+        setupChangePassword();
+    });
+</script>
+</body>
+</html>
